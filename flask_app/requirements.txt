@@ -1,0 +1,9 @@
+anthropic
+rich
+tavily-python
+ollama
+groq
+openai
+Flask
+streamlit
+watchdog

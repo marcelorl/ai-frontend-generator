@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8sLkgvG7g2q5secix/2+E45YZ6G4sE49AxSHvds41fNhgbJIz6Q" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+        <form class="todo-form">
+            <label for="todo-input">Add Task:</label>
+            <input type="text" class="form-control" id="todo-input">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <div class="todo-container">
+            <ul class="list-group"></ul>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
