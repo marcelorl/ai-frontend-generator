@@ -14,7 +14,6 @@ request = st.text_area("Descreva brevemente o app que voce gostaria de montar?",
 button = st.button("Montar agora")
 box = st.container(height=500)
 with box:
-    # components.iframe("http://localhost/create_a_workout_tracker_app/WorkoutTracker/", height=500)
     if button and request:
         response = maestro_groq.run_maestro(request)
         print(response)

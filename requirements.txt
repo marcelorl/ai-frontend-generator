@@ -1,0 +1,7 @@
+rich
+tavily-python
+groq
+streamlit
+watchdog
+langchain-groq
+python-dotenv
