@@ -18,6 +18,6 @@ with box:
         response = maestro_groq.run_maestro(request)
         print(response)
         try:
-            components.iframe('http://localhost/'+response[0].replace('results/', ''), height=500)
+            components.iframe('http://static/'+response[0].replace('../results/', ''), height=500)
         except KeyError:
             box.write("Desculpe, não conseguimos criar seu app.")

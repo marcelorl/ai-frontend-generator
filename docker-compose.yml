@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   nginx:
+    container_name: static
     image: nginx:latest
     ports:
       - "80:80"
@@ -21,6 +22,8 @@ services:
       - "8501:8501"
     volumes:
       - ./app:/workspaces/app
+    env_file:
+      - .env
     networks:
       - server-network
 

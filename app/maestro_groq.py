@@ -5,11 +5,8 @@ from rich.panel import Panel
 from datetime import datetime
 import json
 from langchain_groq import ChatGroq
-from dotenv import load_dotenv
 
 import os
-
-load_dotenv()
 
 # Define the models to use for each agent
 ORCHESTRATOR_MODEL = "mixtral-8x7b-32768"
@@ -23,7 +20,7 @@ def opus_orchestrator(objective, file_content=None, previous_results=None):
     chain = ChatGroq(
         temperature=0.7,
         model_name=ORCHESTRATOR_MODEL,
-        api_key=os.getenv('GROQ_API_KEY')
+        api_key=os.environ['GROQ_API_KEY']
     )
 
     console.print(f"\n[bold]Calling Orchestrator for your objective[/bold]")
@@ -47,7 +44,7 @@ def haiku_sub_agent(prompt, previous_haiku_tasks=None):
     chain = ChatGroq(
         temperature=0.7,
         model_name=SUB_AGENT_MODEL,
-        api_key=os.getenv('GROQ_API_KEY')
+        api_key=os.environ['GROQ_API_KEY']
     )
 
     if previous_haiku_tasks is None:
@@ -72,7 +69,7 @@ def opus_refine(objective, sub_task_results, filename, projectname, continuation
     chain = ChatGroq(
         temperature=0.7,
         model_name=REFINER_MODEL,
-        api_key=os.getenv('GROQ_API_KEY')
+        api_key=os.environ['GROQ_API_KEY']
     )
     
     console.print("\nCalling Opus to provide the refined final output for your objective:")
@@ -200,7 +197,7 @@ def run_maestro(objective):
     code_blocks = re.findall(r'[^\w\n]*Filename:[^\w\n]*(\S+)\s*```[\w]*\n([\s\S]*?)\n```', refined_output, re.DOTALL)
     
     # Create the folder structure and code files
-    files = create_folder_structure('results/'+project_name, folder_structure, code_blocks, [])
+    files = create_folder_structure('../results/'+project_name, folder_structure, code_blocks, [])
     
     # Truncate the sanitized_objective to a maximum of 50 characters
     max_length = 25

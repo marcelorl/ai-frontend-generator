@@ -1,7 +1,13 @@
 FROM python:3.11-slim
 
+WORKDIR /workspaces
+
 COPY requirements.txt /tmp/requirements.txt
 RUN pip3 install -U pip
 RUN pip3 install --no-cache -r /tmp/requirements.txt && rm -f /tmp/requirements.txt
 
-WORKDIR /workspaces
+COPY ./app ./app
+
+WORKDIR /workspaces/app
+
+CMD ["streamlit", "run", "app.py"]

@@ -4,4 +4,3 @@ groq
 streamlit
 watchdog
 langchain-groq
-python-dotenv
