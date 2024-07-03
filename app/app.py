@@ -12,12 +12,17 @@ st.write("""
 
 request = st.text_area("Descreva brevemente o app que voce gostaria de montar?", placeholder='criar um app de lista de tarefas\ncriar um app de treino\ncriar um app para guardar receitas')
 button = st.button("Montar agora")
-box = st.container(height=500)
-with box:
-    if button and request:
-        response = maestro_groq.run_maestro(request)
+
+if button and request:
+    st.write("""
+        Preview your App
+    """)
+    box = st.container(height=500)
+    with box:
+        with st.spinner("waiting"):
+            response = maestro_groq.run_maestro(request)
         print(response)
         try:
-            components.iframe('http://static/'+response[0].replace('../results/', ''), height=500)
+            components.iframe('http://localhost/'+response[0].replace('../results/', ''), height=500)
         except KeyError:
             box.write("Desculpe, não conseguimos criar seu app.")

@@ -7,6 +7,7 @@ RUN pip3 install -U pip
 RUN pip3 install --no-cache -r /tmp/requirements.txt && rm -f /tmp/requirements.txt
 
 COPY ./app ./app
+COPY ./results ./results
 
 WORKDIR /workspaces/app
 
