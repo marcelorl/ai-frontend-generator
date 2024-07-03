@@ -28,7 +28,12 @@ AI Frontend Generator is a powerful tool designed to automate the creation of fr
 To set up and run the AI Frontend Generator, follow these steps:
 
 ```bash
+cp .env.example .env
 docker-compose up --build
 ```
+
+You need to create a Groq account and API Key: https://console.groq.com/keys
+Paste it in the .env file.
+
 ## License
 This project is licensed under the MIT License.
