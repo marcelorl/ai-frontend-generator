@@ -32,8 +32,8 @@ cp .env.example .env
 docker-compose up --build
 ```
 
-You need to create a Groq account and API Key: https://console.groq.com/keys
-Paste it in the .env file.
+ - Create a Groq account and API Key: https://console.groq.com/keys
+ - Paste the key in the .env file.
 
 ## License
 This project is licensed under the MIT License.

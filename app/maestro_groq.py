@@ -84,7 +84,7 @@ def run_maestro(objective):
     truncated_objective = sanitized_objective[:max_length] if len(sanitized_objective) > max_length else sanitized_objective
 
     # Update the filename to include the project name
-    filename = f"{timestamp}_{truncated_objective}.md"
+    filename = f"../results/{timestamp}_{truncated_objective}.md"
 
     # Prepare the full exchange log
     exchange_log = f"Objective: {objective}\n\n"
