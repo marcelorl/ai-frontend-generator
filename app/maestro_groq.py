@@ -5,28 +5,43 @@ from datetime import datetime
 import json
 from agent import opus_orchestrator, haiku_sub_agent, opus_refine
 from files import create_folder_structure
+import tiktoken
+import time
 
 console = Console()
 
+def stringify_exchange(task_exchanges, exchange_log=''):
+    for i, exchange in enumerate(task_exchanges, start=1):
+        if not isinstance(exchange, (list, tuple)) or len(exchange) != 2:
+            return exchange_log
+        prompt, result = exchange
+        exchange_log += f"Task {i}:\n"
+        exchange_log += f"Prompt: {prompt}\n"
+        exchange_log += f"Result: {result}\n\n"
+    return exchange_log
+
+def num_tokens_from_string(string: str) -> int:
+    """Returns the number of tokens in a text string."""
+    encoding = tiktoken.get_encoding("cl100k_base")
+    num_tokens = len(encoding.encode(string if string else ''))
+    return num_tokens
+
 def run_maestro(objective):
-    # Check if the input contains a file path
-    if "./" in objective or "/" in objective:
-        # Extract the file path from the objective
-        file_path = re.findall(r'[./\w]+\.[\w]+', objective)[0]
-        # Read the file content
-        with open(file_path, 'r') as file:
-            file_content = file.read()
-        # Update the objective string to remove the file path
-        objective = objective.split(file_path)[0].strip()
-    else:
-        file_content = None
+    file_content = None
 
     task_exchanges = []
     haiku_tasks = []
+    tokens_limiter = 1
 
     while True:
         # Call Orchestrator to break down the objective into the next sub-task or provide the final output
         previous_results = [result for _, result in task_exchanges]
+        token_counter = num_tokens_from_string(stringify_exchange(task_exchanges, "\n".join(previous_results) if previous_results else "None"))
+        if (token_counter > 4000 * tokens_limiter):
+            print('========================waiting 1 minute========================')
+            tokens_limiter += 1
+            time.sleep(60)
+        print('-----------------------------------------', token_counter)
         if not task_exchanges:
             # Pass the file content only in the first iteration if available
             opus_result, file_content_for_haiku = opus_orchestrator(objective, file_content, previous_results)
@@ -42,6 +57,12 @@ def run_maestro(objective):
             # Append file content to the prompt for the initial call to haiku_sub_agent, if applicable
             if file_content_for_haiku and not haiku_tasks:
                 sub_task_prompt = f"{sub_task_prompt}\n\nFile content:\n{file_content_for_haiku}"
+            token_counter = num_tokens_from_string(stringify_exchange(task_exchanges, opus_result))
+            if (token_counter > 4000 * tokens_limiter):
+                print('========================waiting 1 minute========================')
+                tokens_limiter += 1
+                time.sleep(60)
+            print('________________________________________', token_counter)
             # Call haiku_sub_agent with the prepared prompt and record the result
             sub_task_result = haiku_sub_agent(sub_task_prompt, haiku_tasks)
             # Log the task and its result for future reference
@@ -56,7 +77,14 @@ def run_maestro(objective):
     timestamp = datetime.now().strftime("%H-%M-%S")
 
     # Call Opus to review and refine the sub-task results
-    refined_output = opus_refine(objective, [result for _, result in task_exchanges], timestamp, sanitized_objective)
+    sub_tasks_results = "\n".join([result for _, result in task_exchanges])
+    token_counter = num_tokens_from_string(stringify_exchange(sub_tasks_results))
+    if (token_counter > 4000 * tokens_limiter):
+        print('========================waiting 1 minute========================')
+        tokens_limiter += 1
+        time.sleep(60)
+    print('++++++++++++++++++++++++++++++++++++===', token_counter)
+    refined_output = opus_refine(objective, sub_tasks_results)
 
     # Extract the project name from the refined output
     project_name_match = re.search(r'Project Name: (.*)', refined_output)
@@ -89,10 +117,7 @@ def run_maestro(objective):
     # Prepare the full exchange log
     exchange_log = f"Objective: {objective}\n\n"
     exchange_log += "=" * 40 + " Task Breakdown " + "=" * 40 + "\n\n"
-    for i, (prompt, result) in enumerate(task_exchanges, start=1):
-        exchange_log += f"Task {i}:\n"
-        exchange_log += f"Prompt: {prompt}\n"
-        exchange_log += f"Result: {result}\n\n"
+    exchange_log = stringify_exchange(task_exchanges, exchange_log)
 
     exchange_log += "=" * 40 + " Refined Final Output " + "=" * 40 + "\n\n"
     exchange_log += refined_output

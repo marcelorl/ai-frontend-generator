@@ -4,3 +4,4 @@ groq
 streamlit
 watchdog
 langchain-groq
+tiktoken
