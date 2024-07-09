@@ -26,6 +26,13 @@ def num_tokens_from_string(string: str) -> int:
     num_tokens = len(encoding.encode(string if string else ''))
     return num_tokens
 
+def token_counter_manager(token_counter, tokens_limiter):
+    if (token_counter > 4000 * tokens_limiter):
+        console.print(Panel(f'Prompt has more than {4000 * tokens_limiter} tokens, waiting 1 minute'))
+        tokens_limiter += 1
+        time.sleep(70)
+    return tokens_limiter
+
 def run_maestro(objective):
     file_content = None
 
@@ -37,11 +44,8 @@ def run_maestro(objective):
         # Call Orchestrator to break down the objective into the next sub-task or provide the final output
         previous_results = [result for _, result in task_exchanges]
         token_counter = num_tokens_from_string(stringify_exchange(task_exchanges, "\n".join(previous_results) if previous_results else "None"))
-        if (token_counter > 4000 * tokens_limiter):
-            print('========================waiting 1 minute========================')
-            tokens_limiter += 1
-            time.sleep(60)
-        print('-----------------------------------------', token_counter)
+        tokens_limiter = token_counter_manager(token_counter, tokens_limiter)
+
         if not task_exchanges:
             # Pass the file content only in the first iteration if available
             opus_result, file_content_for_haiku = opus_orchestrator(objective, file_content, previous_results)
@@ -58,11 +62,8 @@ def run_maestro(objective):
             if file_content_for_haiku and not haiku_tasks:
                 sub_task_prompt = f"{sub_task_prompt}\n\nFile content:\n{file_content_for_haiku}"
             token_counter = num_tokens_from_string(stringify_exchange(task_exchanges, opus_result))
-            if (token_counter > 4000 * tokens_limiter):
-                print('========================waiting 1 minute========================')
-                tokens_limiter += 1
-                time.sleep(60)
-            print('________________________________________', token_counter)
+            tokens_limiter = token_counter_manager(token_counter, tokens_limiter)
+            
             # Call haiku_sub_agent with the prepared prompt and record the result
             sub_task_result = haiku_sub_agent(sub_task_prompt, haiku_tasks)
             # Log the task and its result for future reference
@@ -79,11 +80,8 @@ def run_maestro(objective):
     # Call Opus to review and refine the sub-task results
     sub_tasks_results = "\n".join([result for _, result in task_exchanges])
     token_counter = num_tokens_from_string(stringify_exchange(sub_tasks_results))
-    if (token_counter > 4000 * tokens_limiter):
-        print('========================waiting 1 minute========================')
-        tokens_limiter += 1
-        time.sleep(60)
-    print('++++++++++++++++++++++++++++++++++++===', token_counter)
+    tokens_limiter = token_counter_manager(token_counter, tokens_limiter)
+    
     refined_output = opus_refine(objective, sub_tasks_results)
 
     # Extract the project name from the refined output
