@@ -1,7 +1,7 @@
 # AI Frontend Generator
 
 ## Overview
-AI Frontend Generator is a powerful tool designed to automate the creation of frontend applications. Leveraging the capabilities of Groq, Streamlit, Python, Docker, and Nginx, this generator streamlines the development process, from gathering requirements to generating and validating the code. The generated static files are stored in the /public directory.
+AI Frontend Generator is a powerful tool designed to automate the creation of frontend applications. Leveraging the capabilities of Groq, Streamlit, Python, Docker, and Nginx, this generator streamlines the development process, from gathering requirements to generating and validating the code. The generated static files are stored in the /results directory.
 
 ## Features
  - Automated Requirement Gathering: Utilizes AI agents that communicate with each other to refine and extract comprehensive requirements from a given prompt.
@@ -21,7 +21,7 @@ AI Frontend Generator is a powerful tool designed to automate the creation of fr
  - Requirement Refinement: AI agents regenerate and refine the prompt to extract detailed requirements.
  - Code Generation: Based on the refined requirements, the AI generates the necessary frontend code.
  - Self-Validation: The AI tests the generated code, making iterative improvements until it functions correctly.
- - Deployment: The final application is containerized using Docker, and static files are placed in the /public directory. Nginx is used to serve the applications.
+ - Deployment: The final application is containerized using Docker, and static files are placed in the /results directory. Nginx is used to serve the applications within an iframe.
 
 ## Installation
 
@@ -29,11 +29,14 @@ To set up and run the AI Frontend Generator, follow these steps:
 
 ```bash
 cp .env.example .env
-docker-compose up --build
 ```
 
  - Create a Groq account and API Key: https://console.groq.com/keys
  - Paste the key in the .env file.
+
+ ```bash
+docker-compose up --build
+```
 
 ## License
 This project is licensed under the MIT License.
