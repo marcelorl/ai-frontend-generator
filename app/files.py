@@ -1,4 +1,5 @@
 import os
+import re
 from rich.console import Console
 from rich.panel import Panel
 
@@ -33,7 +34,7 @@ def create_folders_and_files(current_path, structure, code_blocks, files):
                 try:
                     files.append(path)
                     with open(path, 'w') as file:
-                        file.write(code_content)
+                        file.write(re.sub(r'integrity="[^"]*"', '', code_content))
                     console.print(Panel(f"Created file: [bold]{path}[/bold]", title="[bold green]File Creation[/bold green]", title_align="left", border_style="green"))
                 except IOError as e:
                     console.print(Panel(f"Error creating file: [bold]{path}[/bold]\nError: {e}", title="[bold red]File Creation Error[/bold red]", title_align="left", border_style="red"))

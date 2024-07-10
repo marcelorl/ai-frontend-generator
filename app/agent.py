@@ -25,8 +25,19 @@ def opus_orchestrator(objective, file_content=None, previous_results=None):
         ("system",
             "You are an AI orchestrator that breaks down frontend objectives into minimal, executable sub-tasks."),
         ("user",
-            f"Based on the following objective{' and file content' if file_content else ''}, and the previous sub-task results (if any), please break down the objective into the next sub-task, and create a concise and detailed prompt for a subagent so it can execute that task. IMPORTANT!!! when dealing with code tasks make sure you check the code for errors and provide fixes and support as part of the next sub-task and you only use HTML, Javascript always style using bootstrap CDN the following <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css' crossorigin='anonymous'>. Never write backend code, focus only on frontend, even if you need to save anything, do it on frontend in memory. If you find any bugs or have suggestions for better code, please include them in the next sub-task prompt. Please assess if the objective has been fully achieved. If the previous sub-task results comprehensively address all aspects of the objective, include the phrase 'The task is complete:' at the beginning of your response. If the objective is not yet fully achieved, break it down into the next sub-task and create a concise and detailed prompt for a subagent to execute that task.:\n\nObjective: {objective}" + ('\\nFile content:\\n' + file_content if file_content else '') + f"\n\nPrevious sub-task results:\n{previous_results_text}")
-    ]
+            f""""
+                Based on the following objective and the previous sub-task results (if any), please break down the objective into up to 5 sub-tasks for the next sub-task, and create a concise and 
+                detailed prompt for a subagent so it can execute that task. IMPORTANT!!! when dealing with code tasks make sure only HTML and Javascript are generated and style with bootstrap.
+                Never write backend code, focus only on frontend, even if you need to save anything, do it on frontend in memory. 
+                You also check the code generated for errors and provide fixes and support as part of the next sub-task. 
+                If you find any bugs or have suggestions for better code, please include them in the next sub-task prompt. Please assess if the objective has been fully achieved. 
+                If the previous sub-task results comprehensively address all aspects of the objective, include the phrase 'The task is complete:' at the beginning of your response. 
+                If the objective is not yet fully achieved, break it down into the next sub-task and create a concise and detailed prompt for a subagent to execute that task.:
+                
+                Objective: {objective}
+                Previous sub-task results: {previous_results_text}
+            """)
+        ]
 
     opus_response = chain.invoke(messages)
 
