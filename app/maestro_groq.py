@@ -10,6 +10,8 @@ import time
 
 console = Console()
 
+
+# stringifying task_exchanges so I can calculate how many tokens the exchange has
 def stringify_exchange(task_exchanges, exchange_log=''):
     for i, exchange in enumerate(task_exchanges, start=1):
         if not isinstance(exchange, (list, tuple)) or len(exchange) != 2:
@@ -20,12 +22,14 @@ def stringify_exchange(task_exchanges, exchange_log=''):
         exchange_log += f"Result: {result}\n\n"
     return exchange_log
 
+# token counter
 def num_tokens_from_string(string: str) -> int:
     """Returns the number of tokens in a text string."""
     encoding = tiktoken.get_encoding("cl100k_base")
     num_tokens = len(encoding.encode(string if string else ''))
     return num_tokens
 
+# tokens_times get incremented as it gets called again, it means the prompt is getting too long, so it needs to wait 1 minute each 4k tokens computed (groq mixtral requirement)
 def token_counter_manager(token_counter, tokens_times):
     if (token_counter > 4000 * tokens_times):
         console.print(Panel(f'Prompt has more than {4000 * tokens_times} tokens, waiting 1 minute'))
@@ -37,19 +41,25 @@ def run_maestro(objective):
     task_exchanges = []
     haiku_tasks = []
     tokens_times = 1
+    final_exchange = []
 
+    # looping through the prompt and incrementing it as needed
     while True:
         # Call Orchestrator to break down the objective into the next sub-task or provide the final output
         previous_results = [result for _, result in task_exchanges]
+        # counting the number of tokens and waiting if needed
         token_counter = num_tokens_from_string(stringify_exchange(task_exchanges))
         tokens_times = token_counter_manager(token_counter, tokens_times)
 
+        # it orchestrates the prompts by generating the first sub-tasks and reviewing the code generated. It also understands if all sub-tasks were applied, if so it terminates the looping
         opus_result = opus_orchestrator(objective, previous_results)
 
         if "The task is complete:" in opus_result:
-            # If Opus indicates the task is complete, exit the loop
+            # If Opus indicates the task is complete, exit the loop and save as the final_exchange so it can be refined
+            final_exchange.append((previous_results, opus_result))
             break
         else:
+            # sub-tasks not yet completed
             sub_task_prompt = opus_result
             token_counter = num_tokens_from_string(stringify_exchange(task_exchanges, opus_result))
             tokens_times = token_counter_manager(token_counter, tokens_times)
@@ -62,7 +72,7 @@ def run_maestro(objective):
             task_exchanges.append((sub_task_prompt, sub_task_result))
 
     # Call Opus to review and refine the sub-task results
-    sub_tasks_results = "\n".join([result for _, result in task_exchanges])
+    sub_tasks_results = "\n".join([result for _, result in final_exchange])
     token_counter = num_tokens_from_string(stringify_exchange(sub_tasks_results))
     token_counter_manager(token_counter, tokens_times)
     
@@ -84,34 +94,6 @@ def run_maestro(objective):
     
     # Create the folder structure and code files
     files = create_folder_structure('../results/', folder_structure, code_blocks, [])
-    
-    # WARNING: Enable this for debugging purposes
-    # # Create the .md filename
-    # sanitized_objective = re.sub(r'\W+', '_', objective)
-    # Extract the project name from the refined output
-    # project_name_match = re.search(r'Project Name: (.*)', refined_output)
-    # project_name = project_name_match.group(1).strip() if project_name_match else sanitized_objective
-    # timestamp = datetime.now().strftime("%H-%M-%S")
-    # # Truncate the sanitized_objective to a maximum of 50 characters
-    # max_length = 25
-    # truncated_objective = sanitized_objective[:max_length] if len(sanitized_objective) > max_length else sanitized_objective
-
-    # # Update the filename to include the project name
-    # filename = f"../results/{timestamp}_{truncated_objective}.md"
-
-    # # Prepare the full exchange log
-    # exchange_log = f"Objective: {objective}\n\n"
-    # exchange_log += "=" * 40 + " Task Breakdown " + "=" * 40 + "\n\n"
-    # exchange_log = stringify_exchange(task_exchanges, exchange_log)
-
-    # exchange_log += "=" * 40 + " Refined Final Output " + "=" * 40 + "\n\n"
-    # exchange_log += refined_output
-
-    # console.print(f"\n[bold]Refined Final output:[/bold]\n{refined_output}")
-
-    # with open(filename, 'w') as file:
-    #     file.write(exchange_log)
-    # print(f"\nFull exchange log saved to {filename}")
 
     return files
 

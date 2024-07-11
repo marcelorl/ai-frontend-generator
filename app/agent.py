@@ -10,6 +10,7 @@ REFINER_MODEL = "llama3-70b-8192"
 
 console = Console()
 
+# it orchestrates the prompts by generating the first sub-tasks and reviewing the code generated. It also understands if all sub-tasks were applied, if so it terminates the looping
 def opus_orchestrator(objective, previous_results=None):
     chain = ChatGroq(
         temperature=0.7,
@@ -45,6 +46,7 @@ def opus_orchestrator(objective, previous_results=None):
     
     return response_text
 
+# agent to generate the code itself
 def haiku_sub_agent(prompt, previous_haiku_tasks=None):
     chain = ChatGroq(
         temperature=0.7,
@@ -69,6 +71,7 @@ def haiku_sub_agent(prompt, previous_haiku_tasks=None):
     console.print(Panel(response_text, title="[bold blue]Groq Sub-agent Result[/bold blue]", title_align="left", border_style="blue", subtitle="Task completed, sending result to Orchestrator 👇"))
     return response_text
 
+# agent to refine/review the tasks and the code, generate all file names and prepare the code to be copied and pasted into the correct files
 def opus_refine(objective, sub_task_results):
     chain = ChatGroq(
         temperature=0.7,
