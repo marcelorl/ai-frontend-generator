@@ -1,6 +1,5 @@
 import streamlit as st
-import streamlit.components.v1 as components
-import maestro_groq
+import maestro
 import styles
 
 st.set_page_config(layout='wide')
@@ -23,8 +22,9 @@ if button and request:
         st.markdown('<div class="custom-container">', unsafe_allow_html=True)
         try:
             with st.spinner("Espere um momento"):
-                response = maestro_groq.run_maestro(request)
-            print(response)
+                response = maestro.run_maestro(request)
+            
+            print('RESPONSE----->', *response)
             url='http://localhost/'+response[0].replace('../results/', '')
             iframe_code = f"""
                 <iframe
