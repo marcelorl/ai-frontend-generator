@@ -57,8 +57,5 @@ def run_maestro(objective):
     # Create the folder structure and code files
     files = create_folder_structure('../results/'+project_name, folder_structure, code_blocks, [])
 
-    print('+++++++++++++++++++++++>', type(files))
-    print('=================>', *files)
-
     return files
 

@@ -1,7 +1,7 @@
 # AI Frontend Generator
 
 ## Overview
-AI Frontend Generator is a powerful tool designed to automate the creation of frontend applications. Leveraging the capabilities of Groq, Streamlit, Python, Docker, and Nginx, this generator streamlines the development process, from gathering requirements to generating and validating the code. The generated static files are stored in the /results directory.
+AI Frontend Generator is a powerful tool designed to automate the creation of frontend applications. Leveraging the capabilities of Open API, Streamlit, Python, Docker, and Nginx, this generator streamlines the development process, from gathering requirements to generating and validating the code. The generated static files are stored in the /results directory.
 
 ## Features
  - Automated Requirement Gathering: Utilizes AI agents that communicate with each other to refine and extract comprehensive requirements from a given prompt.
@@ -10,7 +10,7 @@ AI Frontend Generator is a powerful tool designed to automate the creation of fr
  - Docker and Nginx Integration: The generated applications are containerized using Docker and served with Nginx for efficient deployment.
 
 ## Technologies Used
- - Groq: For natural language understanding and processing.
+ - Open API: For natural language understanding and processing.
  - Streamlit: To provide an interactive interface for the generator.
  - Python: The core programming language used for the generator's logic.
  - Docker: To containerize the generated applications.
@@ -31,12 +31,16 @@ To set up and run the AI Frontend Generator, follow these steps:
 cp .env.example .env
 ```
 
- - Create a Groq account and API Key: https://console.groq.com/keys
+ - Create an OpenAPI account and API Key
  - Paste the key in the .env file.
 
  ```bash
 docker-compose up --build
 ```
+
+## Examples
+![App 1](images/app1.png)
+![App 2](images/app2.png)
 
 ## License
 This project is licensed under the MIT License.
