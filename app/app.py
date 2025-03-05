@@ -7,21 +7,21 @@ st.markdown(styles.button_css, unsafe_allow_html=True)
 st.title('Frontend App Builder')
 
 request = st.text_area(
-    "Descreva brevemente o app que voce gostaria de montar?",
-    placeholder="""crie um app de lista de tarefas
-crie um app de treino
-crie um app para guardar receitas
-crie um app lista de compras
-crie um app para guardar os filmes que ja assisti
-crie um app de anotações
-crie um app para controle de gastos""")
-button = st.button("Montar agora", type="primary")
+    "Briefly describe the app you would like to build?",
+    placeholder="""create a task list app
+create a workout app
+create an app to store recipes
+create a shopping list app
+create an app to save the movies I've watched
+create a notes app
+create an expense tracking app""")
+button = st.button("Build now", type="primary")
 
 if button and request:
-    with st.expander(f"Resultado{' - ' + request if request else ''}", True):
+    with st.expander(f"Result{' - ' + request if request else ''}", True):
         st.markdown('<div class="custom-container">', unsafe_allow_html=True)
         try:
-            with st.spinner("Espere um momento"):
+            with st.spinner("Please wait a moment"):
                 response = maestro.run_maestro(request)
             
             print(*response)
@@ -35,5 +35,5 @@ if button and request:
                 """
             st.markdown(iframe_code, unsafe_allow_html=True)
         except KeyError:
-            st.error("Desculpe, não conseguimos criar seu app, tente novamente.")
+            st.error("Sorry, we couldn't create your app, please try again.")
         st.markdown('</div>', unsafe_allow_html=True)

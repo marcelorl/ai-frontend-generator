@@ -35,7 +35,7 @@ cp .env.example .env
  - Paste the key in the .env file.
 
  ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
 ## Examples
